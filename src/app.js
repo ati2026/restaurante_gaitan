@@ -36,6 +36,14 @@ app.use(
 
 );
 
+app.use(
+
+    "/api/mesas",
+
+    require("./routes/mesasRoutes")
+
+);
+
 // Ruta principal
 
 app.get("/", (req, res) => {
