@@ -1,0 +1,871 @@
+{
+  "info": {
+    "_postman_id": "9d4150df-47c1-4be7-a2c3-8f95f4d94701",
+    "name": "Las Carnitas API",
+    "description": "Coleccion para probar autenticacion, mesas y reservaciones del proyecto Restaurante Las Carnitas de Don Gaitan.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "clienteToken",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "mesaId",
+      "value": "1"
+    },
+    {
+      "key": "reservacionId",
+      "value": "1"
+    },
+    {
+      "key": "clienteCorreo",
+      "value": "cliente.postman@test.com"
+    },
+    {
+      "key": "clientePassword",
+      "value": "123456"
+    },
+    {
+      "key": "adminCorreo",
+      "value": "admin@test.com"
+    },
+    {
+      "key": "adminPassword",
+      "value": "123456"
+    }
+  ],
+  "item": [
+    {
+      "name": "Base",
+      "item": [
+        {
+          "name": "Home",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Verifica que la API responda correctamente."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Cliente - OK",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Cliente\",\n  \"apellido\": \"Postman\",\n  \"correo\": \"{{clienteCorreo}}\",\n  \"password\": \"{{clientePassword}}\",\n  \"telefono\": \"7777-7777\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Crea un usuario cliente. Si ya existe, devolvera 400 por correo duplicado."
+          }
+        },
+        {
+          "name": "Login Cliente - OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('clienteToken', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{clienteCorreo}}\",\n  \"password\": \"{{clientePassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesion como cliente y guarda el token en la variable clienteToken."
+          }
+        },
+        {
+          "name": "Login Cliente - Credenciales Invalidas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{clienteCorreo}}\",\n  \"password\": \"incorrecta\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Debe responder 401."
+          }
+        },
+        {
+          "name": "Perfil Cliente - OK",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "perfil"
+              ]
+            },
+            "description": "Consulta el perfil del usuario autenticado."
+          }
+        },
+        {
+          "name": "Login Admin - OK",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('adminToken', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"{{adminCorreo}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Inicia sesion como admin y guarda el token en la variable adminToken."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mesas",
+      "item": [
+        {
+          "name": "Listar Mesas - Publico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mesas"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar Mesas Disponibles - Publico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas/disponibles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mesas",
+                "disponibles"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener Mesa por ID - OK",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas/{{mesaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mesas",
+                "{{mesaId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Mesa - OK Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": 99,\n  \"capacidad\": 4,\n  \"ubicacion\": \"Terraza\",\n  \"estado\": \"Disponible\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mesas"
+              ]
+            },
+            "description": "Requiere token admin."
+          }
+        },
+        {
+          "name": "Crear Mesa - Sin Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": 100,\n  \"capacidad\": 4,\n  \"ubicacion\": \"Salon\",\n  \"estado\": \"Disponible\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mesas"
+              ]
+            },
+            "description": "Debe responder 401."
+          }
+        },
+        {
+          "name": "Crear Mesa - Token Cliente Sin Permiso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": 101,\n  \"capacidad\": 4,\n  \"ubicacion\": \"Salon\",\n  \"estado\": \"Disponible\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mesas"
+              ]
+            },
+            "description": "Debe responder 403."
+          }
+        },
+        {
+          "name": "Actualizar Mesa - OK Admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero\": 99,\n  \"capacidad\": 6,\n  \"ubicacion\": \"Salon principal\",\n  \"estado\": \"Disponible\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas/{{mesaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mesas",
+                "{{mesaId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Eliminar Mesa - OK Admin",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/mesas/{{mesaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "mesas",
+                "{{mesaId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservaciones",
+      "item": [
+        {
+          "name": "Crear Reservacion - OK Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mesa_id\": {{mesaId}},\n  \"fecha\": \"2026-07-20\",\n  \"hora\": \"19:00\",\n  \"personas\": 4,\n  \"observaciones\": \"Mesa cerca de la ventana\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ]
+            },
+            "description": "Crea una reservacion para el cliente autenticado."
+          }
+        },
+        {
+          "name": "Crear Reservacion - Sin Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mesa_id\": {{mesaId}},\n  \"fecha\": \"2026-07-20\",\n  \"hora\": \"20:00\",\n  \"personas\": 2,\n  \"observaciones\": \"Sin token\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ]
+            },
+            "description": "Debe responder 401."
+          }
+        },
+        {
+          "name": "Crear Reservacion - Token Admin Sin Permiso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mesa_id\": {{mesaId}},\n  \"fecha\": \"2026-07-20\",\n  \"hora\": \"20:30\",\n  \"personas\": 2,\n  \"observaciones\": \"Intento con admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ]
+            },
+            "description": "Debe responder 403."
+          }
+        },
+        {
+          "name": "Crear Reservacion - Fecha Pasada",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mesa_id\": {{mesaId}},\n  \"fecha\": \"2024-01-01\",\n  \"hora\": \"19:00\",\n  \"personas\": 2,\n  \"observaciones\": \"Debe fallar por fecha pasada\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ]
+            },
+            "description": "Debe responder 400."
+          }
+        },
+        {
+          "name": "Crear Reservacion - Excede Capacidad",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mesa_id\": {{mesaId}},\n  \"fecha\": \"2026-07-21\",\n  \"hora\": \"19:00\",\n  \"personas\": 50,\n  \"observaciones\": \"Debe fallar por capacidad\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ]
+            },
+            "description": "Debe responder 400."
+          }
+        },
+        {
+          "name": "Crear Reservacion - Conflicto de Horario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mesa_id\": {{mesaId}},\n  \"fecha\": \"2026-07-20\",\n  \"hora\": \"19:00\",\n  \"personas\": 4,\n  \"observaciones\": \"Debe fallar si ya existe una reservacion en ese horario\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ]
+            },
+            "description": "Primero ejecuta Crear Reservacion - OK Cliente y luego esta para obtener 409."
+          }
+        },
+        {
+          "name": "Mis Reservaciones - OK Cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones/mis",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones",
+                "mis"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mis Reservaciones - Token Admin Sin Permiso",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones/mis",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones",
+                "mis"
+              ]
+            },
+            "description": "Debe responder 403."
+          }
+        },
+        {
+          "name": "Listar Todas las Reservaciones - OK Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar Reservaciones con Filtros - Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones?estado=Pendiente&mesa_id={{mesaId}}&desde=2026-07-01&hasta=2026-07-31",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "Pendiente"
+                },
+                {
+                  "key": "mesa_id",
+                  "value": "{{mesaId}}"
+                },
+                {
+                  "key": "desde",
+                  "value": "2026-07-01"
+                },
+                {
+                  "key": "hasta",
+                  "value": "2026-07-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar Reservaciones - Token Cliente Sin Permiso",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones"
+              ]
+            },
+            "description": "Debe responder 403."
+          }
+        },
+        {
+          "name": "Cambiar Estado Reservacion - Confirmada",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Confirmada\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones/{{reservacionId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones",
+                "{{reservacionId}}",
+                "estado"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cambiar Estado Reservacion - Estado Invalido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Aprobada\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones/{{reservacionId}}/estado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones",
+                "{{reservacionId}}",
+                "estado"
+              ]
+            },
+            "description": "Debe responder 400."
+          }
+        },
+        {
+          "name": "Cancelar Mi Reservacion - OK Cliente",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{clienteToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones/{{reservacionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones",
+                "{{reservacionId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancelar Mi Reservacion - Token Admin Sin Permiso",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservaciones/{{reservacionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservaciones",
+                "{{reservacionId}}"
+              ]
+            },
+            "description": "Debe responder 403."
+          }
+        }
+      ]
+    }
+  ]
+}

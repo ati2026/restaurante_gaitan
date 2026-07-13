@@ -44,6 +44,14 @@ app.use(
 
 );
 
+app.use(
+
+    "/api/reservaciones",
+
+    require("./routes/reservacionesRoutes")
+
+);
+
 // Ruta principal
 
 app.get("/", (req, res) => {
